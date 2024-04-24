@@ -8,18 +8,17 @@ import com.site.blog.my.core.util.MyBlogUtils;
 import com.site.blog.my.core.util.PageQueryUtil;
 import com.site.blog.my.core.util.Result;
 import com.site.blog.my.core.util.ResultGenerator;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import jakarta.annotation.Resource;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
@@ -27,12 +26,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Random;
 
-/**
- * @author 13
- * @qq交流群 796794009
- * @email 2449207463@qq.com
- * @link http://13blog.site
- */
+
 @Controller
 @RequestMapping("/admin")
 public class BlogController {
@@ -44,7 +38,7 @@ public class BlogController {
 
     @GetMapping("/blogs/list")
     @ResponseBody
-    public Result list(@RequestParam Map<String, Object> params) {
+    public Result<Object> list(@RequestParam Map<String, Object> params) {
         if (ObjectUtils.isEmpty(params.get("page")) || ObjectUtils.isEmpty(params.get("limit"))) {
             return ResultGenerator.genFailResult("参数异常！");
         }
@@ -80,7 +74,7 @@ public class BlogController {
 
     @PostMapping("/blogs/save")
     @ResponseBody
-    public Result save(@RequestParam("blogTitle") String blogTitle,
+    public Result<Object> save(@RequestParam("blogTitle") String blogTitle,
                        @RequestParam(name = "blogSubUrl", required = false) String blogSubUrl,
                        @RequestParam("blogCategoryId") Integer blogCategoryId,
                        @RequestParam("blogTags") String blogTags,
@@ -131,7 +125,7 @@ public class BlogController {
 
     @PostMapping("/blogs/update")
     @ResponseBody
-    public Result update(@RequestParam("blogId") Long blogId,
+    public Result<Object> update(@RequestParam("blogId") Long blogId,
                          @RequestParam("blogTitle") String blogTitle,
                          @RequestParam(name = "blogSubUrl", required = false) String blogSubUrl,
                          @RequestParam("blogCategoryId") Integer blogCategoryId,
@@ -185,16 +179,15 @@ public class BlogController {
     @PostMapping("/blogs/md/uploadfile")
     public void uploadFileByEditormd(HttpServletRequest request,
                                      HttpServletResponse response,
-                                     @RequestParam(name = "editormd-image-file", required = true)
+                                     @RequestParam(name = "editormd-image-file")
                                              MultipartFile file) throws IOException, URISyntaxException {
         String fileName = file.getOriginalFilename();
+        assert fileName != null;
         String suffixName = fileName.substring(fileName.lastIndexOf("."));
         //生成文件名称通用方法
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
         Random r = new Random();
-        StringBuilder tempName = new StringBuilder();
-        tempName.append(sdf.format(new Date())).append(r.nextInt(100)).append(suffixName);
-        String newFileName = tempName.toString();
+        String newFileName = sdf.format(new Date()) + r.nextInt(100) + suffixName;
         //创建文件
         File destFile = new File(Constants.FILE_UPLOAD_DIC + newFileName);
         String fileUrl = MyBlogUtils.getHost(new URI(request.getRequestURL() + "")) + "/upload/" + newFileName;
@@ -209,8 +202,6 @@ public class BlogController {
             request.setCharacterEncoding("utf-8");
             response.setHeader("Content-Type", "text/html");
             response.getWriter().write("{\"success\": 1, \"message\":\"success\",\"url\":\"" + fileUrl + "\"}");
-        } catch (UnsupportedEncodingException e) {
-            response.getWriter().write("{\"success\":0}");
         } catch (IOException e) {
             response.getWriter().write("{\"success\":0}");
         }
@@ -218,7 +209,7 @@ public class BlogController {
 
     @PostMapping("/blogs/delete")
     @ResponseBody
-    public Result delete(@RequestBody Integer[] ids) {
+    public Result<Object> delete(@RequestBody Integer[] ids) {
         if (ids.length < 1) {
             return ResultGenerator.genFailResult("参数异常！");
         }

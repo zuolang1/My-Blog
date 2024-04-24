@@ -16,15 +16,19 @@ import java.util.stream.Collectors;
 @Service
 public class LinkServiceImpl implements LinkService {
 
+
+    private final BlogLinkMapper blogLinkMapper;
+
     @Autowired
-    private BlogLinkMapper blogLinkMapper;
+    public LinkServiceImpl(BlogLinkMapper blogLinkMapper) {
+        this.blogLinkMapper = blogLinkMapper;
+    }
 
     @Override
     public PageResult getBlogLinkPage(PageQueryUtil pageUtil) {
         List<BlogLink> links = blogLinkMapper.findLinkList(pageUtil);
         int total = blogLinkMapper.getTotalLinks(pageUtil);
-        PageResult pageResult = new PageResult(links, total, pageUtil.getLimit(), pageUtil.getPage());
-        return pageResult;
+        return new PageResult(links, total, pageUtil.getLimit(), pageUtil.getPage());
     }
 
     @Override
@@ -58,8 +62,7 @@ public class LinkServiceImpl implements LinkService {
         List<BlogLink> links = blogLinkMapper.findLinkList(null);
         if (!CollectionUtils.isEmpty(links)) {
             //根据type进行分组
-            Map<Byte, List<BlogLink>> linksMap = links.stream().collect(Collectors.groupingBy(BlogLink::getLinkType));
-            return linksMap;
+            return links.stream().collect(Collectors.groupingBy(BlogLink::getLinkType));
         }
         return null;
     }

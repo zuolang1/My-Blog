@@ -10,12 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 
-/**
- * @author 13
- * @qq交流群 796794009
- * @email 2449207463@qq.com
- * @link http://13blog.site
- */
+
 @Controller
 @RequestMapping("/admin")
 public class ConfigurationController {
@@ -32,10 +27,10 @@ public class ConfigurationController {
 
     @PostMapping("/configurations/website")
     @ResponseBody
-    public Result website(@RequestParam(value = "websiteName", required = false) String websiteName,
-                          @RequestParam(value = "websiteDescription", required = false) String websiteDescription,
-                          @RequestParam(value = "websiteLogo", required = false) String websiteLogo,
-                          @RequestParam(value = "websiteIcon", required = false) String websiteIcon) {
+    public Result<Object> website(@RequestParam(value = "websiteName", required = false) String websiteName,
+                                  @RequestParam(value = "websiteDescription", required = false) String websiteDescription,
+                                  @RequestParam(value = "websiteLogo", required = false) String websiteLogo,
+                                  @RequestParam(value = "websiteIcon", required = false) String websiteIcon) {
         int updateResult = 0;
         if (StringUtils.hasText(websiteName)) {
             updateResult += configService.updateConfig("websiteName", websiteName);
@@ -54,9 +49,9 @@ public class ConfigurationController {
 
     @PostMapping("/configurations/userInfo")
     @ResponseBody
-    public Result userInfo(@RequestParam(value = "yourAvatar", required = false) String yourAvatar,
-                           @RequestParam(value = "yourName", required = false) String yourName,
-                           @RequestParam(value = "yourEmail", required = false) String yourEmail) {
+    public Result<Object> userInfo(@RequestParam(value = "yourAvatar", required = false) String yourAvatar,
+                                   @RequestParam(value = "yourName", required = false) String yourName,
+                                   @RequestParam(value = "yourEmail", required = false) String yourEmail) {
         int updateResult = 0;
         if (StringUtils.hasText(yourAvatar)) {
             updateResult += configService.updateConfig("yourAvatar", yourAvatar);
@@ -72,11 +67,11 @@ public class ConfigurationController {
 
     @PostMapping("/configurations/footer")
     @ResponseBody
-    public Result footer(@RequestParam(value = "footerAbout", required = false) String footerAbout,
-                         @RequestParam(value = "footerICP", required = false) String footerICP,
-                         @RequestParam(value = "footerCopyRight", required = false) String footerCopyRight,
-                         @RequestParam(value = "footerPoweredBy", required = false) String footerPoweredBy,
-                         @RequestParam(value = "footerPoweredByURL", required = false) String footerPoweredByURL) {
+    public Result<Object> footer(@RequestParam(value = "footerAbout", required = false) String footerAbout,
+                                 @RequestParam(value = "footerICP", required = false) String footerICP,
+                                 @RequestParam(value = "footerCopyRight", required = false) String footerCopyRight,
+                                 @RequestParam(value = "footerPoweredBy", required = false) String footerPoweredBy,
+                                 @RequestParam(value = "footerPoweredByURL", required = false) String footerPoweredByURL) {
         int updateResult = 0;
         if (StringUtils.hasText(footerAbout)) {
             updateResult += configService.updateConfig("footerAbout", footerAbout);

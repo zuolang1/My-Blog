@@ -16,16 +16,12 @@ import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author 13
- * @qq交流群 796794009
- * @email 2449207463@qq.com
- * @link http://13blog.site
- */
+
 @Controller
 public class MyBlogController {
 
     //public static String theme = "default";
+
     //public static String theme = "yummy-jekyll";
     public static String theme = "amaze";
     @Resource
@@ -44,7 +40,7 @@ public class MyBlogController {
     /**
      * 首页
      *
-     * @return
+     * @return html content
      */
     @GetMapping({"/", "/index", "index.html"})
     public String index(HttpServletRequest request) {
@@ -54,7 +50,7 @@ public class MyBlogController {
     /**
      * 首页 分页数据
      *
-     * @return
+     * @return html template
      */
     @GetMapping({"/page/{pageNum}"})
     public String page(HttpServletRequest request, @PathVariable("pageNum") int pageNum) {
@@ -74,7 +70,7 @@ public class MyBlogController {
     /**
      * Categories页面(包括分类数据和标签数据)
      *
-     * @return
+     * @return html template
      */
     @GetMapping({"/categories"})
     public String categories(HttpServletRequest request) {
@@ -88,7 +84,7 @@ public class MyBlogController {
     /**
      * 详情页
      *
-     * @return
+     * @return html template
      */
     @GetMapping({"/blog/{blogId}", "/article/{blogId}"})
     public String detail(HttpServletRequest request, @PathVariable("blogId") Long blogId, @RequestParam(value = "commentPage", required = false, defaultValue = "1") Integer commentPage) {
@@ -105,7 +101,7 @@ public class MyBlogController {
     /**
      * 标签列表页
      *
-     * @return
+     * @return html template
      */
     @GetMapping({"/tag/{tagName}"})
     public String tag(HttpServletRequest request, @PathVariable("tagName") String tagName) {
@@ -115,7 +111,7 @@ public class MyBlogController {
     /**
      * 标签列表页
      *
-     * @return
+     * @return html template
      */
     @GetMapping({"/tag/{tagName}/{page}"})
     public String tag(HttpServletRequest request, @PathVariable("tagName") String tagName, @PathVariable("page") Integer page) {
@@ -134,7 +130,7 @@ public class MyBlogController {
     /**
      * 分类列表页
      *
-     * @return
+     * @return html template
      */
     @GetMapping({"/category/{categoryName}"})
     public String category(HttpServletRequest request, @PathVariable("categoryName") String categoryName) {
@@ -144,7 +140,7 @@ public class MyBlogController {
     /**
      * 分类列表页
      *
-     * @return
+     * @return html template
      */
     @GetMapping({"/category/{categoryName}/{page}"})
     public String category(HttpServletRequest request, @PathVariable("categoryName") String categoryName, @PathVariable("page") Integer page) {
@@ -163,7 +159,7 @@ public class MyBlogController {
     /**
      * 搜索列表页
      *
-     * @return
+     * @return html template
      */
     @GetMapping({"/search/{keyword}"})
     public String search(HttpServletRequest request, @PathVariable("keyword") String keyword) {
@@ -173,7 +169,7 @@ public class MyBlogController {
     /**
      * 搜索列表页
      *
-     * @return
+     * @return html template
      */
     @GetMapping({"/search/{keyword}/{page}"})
     public String search(HttpServletRequest request, @PathVariable("keyword") String keyword, @PathVariable("page") Integer page) {
@@ -193,7 +189,7 @@ public class MyBlogController {
     /**
      * 友情链接页
      *
-     * @return
+     * @return html template
      */
     @GetMapping({"/link"})
     public String link(HttpServletRequest request) {
@@ -220,7 +216,7 @@ public class MyBlogController {
      */
     @PostMapping(value = "/blog/comment")
     @ResponseBody
-    public Result comment(HttpServletRequest request, HttpSession session,
+    public Result<Object> comment(HttpServletRequest request, HttpSession session,
                           @RequestParam Long blogId, @RequestParam String verifyCode,
                           @RequestParam String commentator, @RequestParam String email,
                           @RequestParam String websiteUrl, @RequestParam String commentBody) {
@@ -267,7 +263,7 @@ public class MyBlogController {
     /**
      * 关于页面 以及其他配置了subUrl的文章页
      *
-     * @return
+     * @return html template
      */
     @GetMapping({"/{subUrl}"})
     public String detail(HttpServletRequest request, @PathVariable("subUrl") String subUrl) {

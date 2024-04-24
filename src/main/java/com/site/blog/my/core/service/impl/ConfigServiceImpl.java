@@ -14,8 +14,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class ConfigServiceImpl implements ConfigService {
-    @Autowired
-    private BlogConfigMapper configMapper;
+
 
     public static final String websiteName = "personal blog";
     public static final String websiteDescription = "personal blog是SpringBoot2+Thymeleaf+Mybatis建造的个人博客网站.SpringBoot实战博客源码.个人博客搭建";
@@ -31,6 +30,14 @@ public class ConfigServiceImpl implements ConfigService {
     public static final String footerCopyRight = "@2018 十三";
     public static final String footerPoweredBy = "personal blog";
     public static final String footerPoweredByURL = "##";
+
+
+    private final BlogConfigMapper configMapper;
+
+    @Autowired
+    public ConfigServiceImpl(BlogConfigMapper configMapper) {
+        this.configMapper = configMapper;
+    }
 
     @Override
     public int updateConfig(String configName, String configValue) {

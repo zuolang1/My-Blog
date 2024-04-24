@@ -4,7 +4,6 @@ import com.site.blog.my.core.dao.BlogTagMapper;
 import com.site.blog.my.core.dao.BlogTagRelationMapper;
 import com.site.blog.my.core.entity.BlogTag;
 import com.site.blog.my.core.entity.BlogTagCount;
-import com.site.blog.my.core.entity.BlogTagRelation;
 import com.site.blog.my.core.service.TagService;
 import com.site.blog.my.core.util.PageQueryUtil;
 import com.site.blog.my.core.util.PageResult;
@@ -17,17 +16,21 @@ import java.util.List;
 @Service
 public class TagServiceImpl implements TagService {
 
+    private final BlogTagMapper blogTagMapper;
+
+    private final BlogTagRelationMapper relationMapper;
+
     @Autowired
-    private BlogTagMapper blogTagMapper;
-    @Autowired
-    private BlogTagRelationMapper relationMapper;
+    public TagServiceImpl(BlogTagMapper blogTagMapper, BlogTagRelationMapper relationMapper) {
+        this.blogTagMapper = blogTagMapper;
+        this.relationMapper = relationMapper;
+    }
 
     @Override
     public PageResult getBlogTagPage(PageQueryUtil pageUtil) {
         List<BlogTag> tags = blogTagMapper.findTagList(pageUtil);
         int total = blogTagMapper.getTotalTags(pageUtil);
-        PageResult pageResult = new PageResult(tags, total, pageUtil.getLimit(), pageUtil.getPage());
-        return pageResult;
+        return new PageResult(tags, total, pageUtil.getLimit(), pageUtil.getPage());
     }
 
     @Override

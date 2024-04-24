@@ -13,12 +13,7 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;
 
-/**
- * @author 13
- * @qq交流群 796794009
- * @email 2449207463@qq.com
- * @link http://13blog.site
- */
+
 @Controller
 @RequestMapping("/admin")
 public class CommentController {
@@ -28,7 +23,7 @@ public class CommentController {
 
     @GetMapping("/comments/list")
     @ResponseBody
-    public Result list(@RequestParam Map<String, Object> params) {
+    public Result<Object> list(@RequestParam Map<String, Object> params) {
         if (ObjectUtils.isEmpty(params.get("page")) || ObjectUtils.isEmpty(params.get("limit"))) {
             return ResultGenerator.genFailResult("参数异常！");
         }
@@ -38,7 +33,7 @@ public class CommentController {
 
     @PostMapping("/comments/checkDone")
     @ResponseBody
-    public Result checkDone(@RequestBody Integer[] ids) {
+    public Result<Object> checkDone(@RequestBody Integer[] ids) {
         if (ids.length < 1) {
             return ResultGenerator.genFailResult("参数异常！");
         }
@@ -51,7 +46,7 @@ public class CommentController {
 
     @PostMapping("/comments/reply")
     @ResponseBody
-    public Result checkDone(@RequestParam("commentId") Long commentId,
+    public Result<Object> checkDone(@RequestParam("commentId") Long commentId,
                             @RequestParam("replyBody") String replyBody) {
         if (commentId == null || commentId < 1 || !StringUtils.hasText(replyBody)) {
             return ResultGenerator.genFailResult("参数异常！");
@@ -65,7 +60,7 @@ public class CommentController {
 
     @PostMapping("/comments/delete")
     @ResponseBody
-    public Result delete(@RequestBody Integer[] ids) {
+    public Result<Object> delete(@RequestBody Integer[] ids) {
         if (ids.length < 1) {
             return ResultGenerator.genFailResult("参数异常！");
         }

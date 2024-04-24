@@ -28,8 +28,7 @@ public class CommentServiceImpl implements CommentService {
     public PageResult getCommentsPage(PageQueryUtil pageUtil) {
         List<BlogComment> comments = blogCommentMapper.findBlogCommentList(pageUtil);
         int total = blogCommentMapper.getTotalBlogComments(pageUtil);
-        PageResult pageResult = new PageResult(comments, total, pageUtil.getLimit(), pageUtil.getPage());
-        return pageResult;
+        return new PageResult(comments, total, pageUtil.getLimit(), pageUtil.getPage());
     }
 
     @Override
@@ -64,7 +63,7 @@ public class CommentServiceImpl implements CommentService {
         if (page < 1) {
             return null;
         }
-        Map params = new HashMap();
+        Map<String,Object> params = new HashMap<>();
         params.put("page", page);
         //每页8条
         params.put("limit", 8);
@@ -74,8 +73,7 @@ public class CommentServiceImpl implements CommentService {
         List<BlogComment> comments = blogCommentMapper.findBlogCommentList(pageUtil);
         if (!CollectionUtils.isEmpty(comments)) {
             int total = blogCommentMapper.getTotalBlogComments(pageUtil);
-            PageResult pageResult = new PageResult(comments, total, pageUtil.getLimit(), pageUtil.getPage());
-            return pageResult;
+            return new PageResult(comments, total, pageUtil.getLimit(), pageUtil.getPage());
         }
         return null;
     }

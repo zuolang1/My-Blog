@@ -35,6 +35,6 @@ public interface BlogMapper {
 
     Blog selectBySubUrl(String subUrl);
 
-    int updateBlogCategorys(@Param("categoryName") String categoryName, @Param("categoryId") Integer categoryId, @Param("ids")Integer[] ids);
+    void updateBlogCategorys(@Param("categoryName") String categoryName, @Param("categoryId") Integer categoryId, @Param("ids")Integer[] ids);
 
 }

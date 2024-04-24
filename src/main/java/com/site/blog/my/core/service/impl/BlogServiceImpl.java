@@ -26,16 +26,20 @@ import java.util.stream.Collectors;
 @Service
 public class BlogServiceImpl implements BlogService {
 
+    private final BlogMapper blogMapper;
+    private final BlogCategoryMapper categoryMapper;
+    private final BlogTagMapper tagMapper;
+    private final BlogTagRelationMapper blogTagRelationMapper;
+    private final BlogCommentMapper blogCommentMapper;
+
     @Autowired
-    private BlogMapper blogMapper;
-    @Autowired
-    private BlogCategoryMapper categoryMapper;
-    @Autowired
-    private BlogTagMapper tagMapper;
-    @Autowired
-    private BlogTagRelationMapper blogTagRelationMapper;
-    @Autowired
-    private BlogCommentMapper blogCommentMapper;
+    public BlogServiceImpl(BlogMapper blogMapper, BlogCategoryMapper categoryMapper, BlogTagMapper tagMapper, BlogTagRelationMapper blogTagRelationMapper, BlogCommentMapper blogCommentMapper) {
+        this.blogMapper = blogMapper;
+        this.categoryMapper = categoryMapper;
+        this.tagMapper = tagMapper;
+        this.blogTagRelationMapper = blogTagRelationMapper;
+        this.blogCommentMapper = blogCommentMapper;
+    }
 
     @Override
     @Transactional
@@ -61,12 +65,12 @@ public class BlogServiceImpl implements BlogService {
             List<BlogTag> tagListForInsert = new ArrayList<>();
             //所有的tag对象，用于建立关系数据
             List<BlogTag> allTagsList = new ArrayList<>();
-            for (int i = 0; i < tags.length; i++) {
-                BlogTag tag = tagMapper.selectByTagName(tags[i]);
+            for (String s : tags) {
+                BlogTag tag = tagMapper.selectByTagName(s);
                 if (tag == null) {
                     //不存在就新增
                     BlogTag tempTag = new BlogTag();
-                    tempTag.setTagName(tags[i]);
+                    tempTag.setTagName(s);
                     tagListForInsert.add(tempTag);
                 } else {
                     allTagsList.add(tag);
@@ -99,8 +103,7 @@ public class BlogServiceImpl implements BlogService {
     public PageResult getBlogsPage(PageQueryUtil pageUtil) {
         List<Blog> blogList = blogMapper.findBlogList(pageUtil);
         int total = blogMapper.getTotalBlogs(pageUtil);
-        PageResult pageResult = new PageResult(blogList, total, pageUtil.getLimit(), pageUtil.getPage());
-        return pageResult;
+        return new PageResult(blogList, total, pageUtil.getLimit(), pageUtil.getPage());
     }
 
     @Override
@@ -152,12 +155,12 @@ public class BlogServiceImpl implements BlogService {
         List<BlogTag> tagListForInsert = new ArrayList<>();
         //所有的tag对象，用于建立关系数据
         List<BlogTag> allTagsList = new ArrayList<>();
-        for (int i = 0; i < tags.length; i++) {
-            BlogTag tag = tagMapper.selectByTagName(tags[i]);
+        for (String s : tags) {
+            BlogTag tag = tagMapper.selectByTagName(s);
             if (tag == null) {
                 //不存在就新增
                 BlogTag tempTag = new BlogTag();
-                tempTag.setTagName(tags[i]);
+                tempTag.setTagName(s);
                 tagListForInsert.add(tempTag);
             } else {
                 allTagsList.add(tag);
@@ -190,7 +193,7 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public PageResult getBlogsForIndexPage(int page) {
-        Map params = new HashMap();
+        Map<String,Object> params = new HashMap<>();
         params.put("page", page);
         //每页8条
         params.put("limit", 8);
@@ -199,8 +202,7 @@ public class BlogServiceImpl implements BlogService {
         List<Blog> blogList = blogMapper.findBlogList(pageUtil);
         List<BlogListVO> blogListVOS = getBlogListVOsByBlogs(blogList);
         int total = blogMapper.getTotalBlogs(pageUtil);
-        PageResult pageResult = new PageResult(blogListVOS, total, pageUtil.getLimit(), pageUtil.getPage());
-        return pageResult;
+        return new PageResult(blogListVOS, total, pageUtil.getLimit(), pageUtil.getPage());
     }
 
     @Override
@@ -221,11 +223,7 @@ public class BlogServiceImpl implements BlogService {
     public BlogDetailVO getBlogDetail(Long id) {
         Blog blog = blogMapper.selectByPrimaryKey(id);
         //不为空且状态为已发布
-        BlogDetailVO blogDetailVO = getBlogDetailVO(blog);
-        if (blogDetailVO != null) {
-            return blogDetailVO;
-        }
-        return null;
+        return getBlogDetailVO(blog);
     }
 
     @Override
@@ -233,7 +231,7 @@ public class BlogServiceImpl implements BlogService {
         if (PatternUtil.validKeyword(tagName)) {
             BlogTag tag = tagMapper.selectByTagName(tagName);
             if (tag != null && page > 0) {
-                Map param = new HashMap();
+                Map<String,Object> param = new HashMap<>();
                 param.put("page", page);
                 param.put("limit", 9);
                 param.put("tagId", tag.getTagId());
@@ -241,8 +239,7 @@ public class BlogServiceImpl implements BlogService {
                 List<Blog> blogList = blogMapper.getBlogsPageByTagId(pageUtil);
                 List<BlogListVO> blogListVOS = getBlogListVOsByBlogs(blogList);
                 int total = blogMapper.getTotalBlogsByTagId(pageUtil);
-                PageResult pageResult = new PageResult(blogListVOS, total, pageUtil.getLimit(), pageUtil.getPage());
-                return pageResult;
+                return new PageResult(blogListVOS, total, pageUtil.getLimit(), pageUtil.getPage());
             }
         }
         return null;
@@ -257,17 +254,16 @@ public class BlogServiceImpl implements BlogService {
                 blogCategory.setCategoryId(0);
             }
             if (blogCategory != null && page > 0) {
-                Map param = new HashMap();
+                Map<String,Object> param = new HashMap<>();
                 param.put("page", page);
                 param.put("limit", 9);
                 param.put("blogCategoryId", blogCategory.getCategoryId());
-                param.put("blogStatus", 1);//过滤发布状态下的数据
+                param.put("blogStatus", 1); //过滤发布状态下的数据
                 PageQueryUtil pageUtil = new PageQueryUtil(param);
                 List<Blog> blogList = blogMapper.findBlogList(pageUtil);
                 List<BlogListVO> blogListVOS = getBlogListVOsByBlogs(blogList);
                 int total = blogMapper.getTotalBlogs(pageUtil);
-                PageResult pageResult = new PageResult(blogListVOS, total, pageUtil.getLimit(), pageUtil.getPage());
-                return pageResult;
+                return new PageResult(blogListVOS, total, pageUtil.getLimit(), pageUtil.getPage());
             }
         }
         return null;
@@ -276,7 +272,7 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public PageResult getBlogsPageBySearch(String keyword, int page) {
         if (page > 0 && PatternUtil.validKeyword(keyword)) {
-            Map param = new HashMap();
+            Map<String,Object> param = new HashMap<>();
             param.put("page", page);
             param.put("limit", 9);
             param.put("keyword", keyword);
@@ -285,8 +281,7 @@ public class BlogServiceImpl implements BlogService {
             List<Blog> blogList = blogMapper.findBlogList(pageUtil);
             List<BlogListVO> blogListVOS = getBlogListVOsByBlogs(blogList);
             int total = blogMapper.getTotalBlogs(pageUtil);
-            PageResult pageResult = new PageResult(blogListVOS, total, pageUtil.getLimit(), pageUtil.getPage());
-            return pageResult;
+            return new PageResult(blogListVOS, total, pageUtil.getLimit(), pageUtil.getPage());
         }
         return null;
     }
@@ -295,18 +290,14 @@ public class BlogServiceImpl implements BlogService {
     public BlogDetailVO getBlogDetailBySubUrl(String subUrl) {
         Blog blog = blogMapper.selectBySubUrl(subUrl);
         //不为空且状态为已发布
-        BlogDetailVO blogDetailVO = getBlogDetailVO(blog);
-        if (blogDetailVO != null) {
-            return blogDetailVO;
-        }
-        return null;
+        return getBlogDetailVO(blog);
     }
 
     /**
      * 方法抽取
      *
-     * @param blog
-     * @return
+     * @param blog 文章
+     * @return BlogDetailVO 页
      */
     private BlogDetailVO getBlogDetailVO(Blog blog) {
         if (blog != null && blog.getBlogStatus() == 1) {
@@ -331,7 +322,7 @@ public class BlogServiceImpl implements BlogService {
                 blogDetailVO.setBlogTags(tags);
             }
             //设置评论数
-            Map params = new HashMap();
+            Map<String,Object> params = new HashMap<>();
             params.put("blogId", blog.getBlogId());
             params.put("commentStatus", 1);//过滤审核通过的数据
             blogDetailVO.setCommentCount(blogCommentMapper.getTotalBlogComments(params));

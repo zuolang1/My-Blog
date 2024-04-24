@@ -5,7 +5,6 @@ import com.site.blog.my.core.entity.AdminUser;
 import com.site.blog.my.core.service.AdminUserService;
 import com.site.blog.my.core.util.MD5Util;
 import org.springframework.stereotype.Service;
-
 import jakarta.annotation.Resource;
 
 @Service
@@ -36,10 +35,8 @@ public class AdminUserServiceImpl implements AdminUserService {
             if (originalPasswordMd5.equals(adminUser.getLoginPassword())) {
                 //设置新密码并修改
                 adminUser.setLoginPassword(newPasswordMd5);
-                if (adminUserMapper.updateByPrimaryKeySelective(adminUser) > 0) {
-                    //修改成功则返回true
-                    return true;
-                }
+                //修改成功则返回true
+                return adminUserMapper.updateByPrimaryKeySelective(adminUser) > 0;
             }
         }
         return false;
@@ -53,10 +50,8 @@ public class AdminUserServiceImpl implements AdminUserService {
             //修改信息
             adminUser.setLoginUserName(loginUserName);
             adminUser.setNickName(nickName);
-            if (adminUserMapper.updateByPrimaryKeySelective(adminUser) > 0) {
-                //修改成功则返回true
-                return true;
-            }
+            //修改成功则返回true
+            return adminUserMapper.updateByPrimaryKeySelective(adminUser) > 0;
         }
         return false;
     }
